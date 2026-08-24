@@ -1,0 +1,11 @@
+{
+  "name": "Chinese to English bilingual hints",
+  "conversion_chain": [
+    {
+      "dict": {
+        "type": "ocd2",
+        "file": "bilingual_zh_en.ocd2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+# Minimal CC-CEDICT-format fixture used by build and smoke tests.
+你好 你好 [ni3 hao3] /hello; hi/CL:個|个[ge4]/
+輸入法 输入法 [shu1 ru4 fa3] /input method/typing method/
+學習 学习 [xue2 xi2] /study/learn/see also 學會|学会[xue2 hui4]/
+學習 学习 [xue2 xi2] /study/to learn/
+電腦 电脑 [dian4 nao3] /computer/
+計算機 计算机 [ji4 suan4 ji1] /computer/calculator/
+完整 完整 [wan2 zheng3] /complete/intact/
+空格 空格 [kong4 ge2] /space bar/blank/
+空 空 [kong1] //CL:個|个[ge4]/
+冗長 冗长 [rong3 chang2] /this deliberately overlong definition is discarded by the default forty codepoint limit/long/
+malformed fixture line

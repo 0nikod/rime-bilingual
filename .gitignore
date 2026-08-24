@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Packaging and environments
+build/
+dist/
+wheels/
+*.egg-info/
+.venv/
+venv/
+
+# Downloaded source dictionaries and generated/intermediate dictionary text
+/.cache/
+/opencc/*.txt
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Temporary files, logs, and crash dumps
+*.tmp
+*.temp
+*.log
+core
+core.*
+*.core
+vgcore.*
+*.dmp

@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install OpenCC and Lua
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y opencc lua5.4
+      - name: Run focused build tests
+        run: python -m unittest discover -s tests -v
+      - name: Build fixture dictionaries
+        run: |
+          python scripts/build.py \
+            --cedict tests/fixtures/cedict_sample.txt \
+            --ecdict tests/fixtures/ecdict_sample.csv \
+            --output build/opencc
+          test -s build/opencc/bilingual_zh_en.ocd2
+          test -s build/opencc/bilingual_en_zh.ocd2
+      - name: Check Lua syntax
+        run: luac -p lua/bilingual_hint.lua
+
+  rime-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install smoke-test dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            librime-dev \
+            librime-plugin-lua \
+            opencc \
+            rime-prelude
+      - name: Run minimal Rime candidate smoke test
+        run: python tests/integration/run_smoke.py

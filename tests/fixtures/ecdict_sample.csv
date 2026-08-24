@@ -1,0 +1,14 @@
+﻿word,translation,pos
+Computer,n. 计算机;电脑,n
+complete,adj. 完整的；完成,adj
+study,v. 学习;研究,v
+STUDY,学习;研习,v
+hello,你好;您好,int
+input,n. 输入法;输入 方法,n
+typing,打字 方法;输入法,n
+space,空格;空白,n
+learn,学习;学会,v
+escaped,"n. 电脑\n[计] 计算机",n
+longword,这是一个故意超过默认四十个 Unicode 码点并且应当被构建器过滤掉的特别特别特别特别特别特别特别特别长翻译,n
+empty,,n
+bad key,无效,n

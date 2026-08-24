@@ -1,0 +1,32 @@
+schema:
+  schema_id: bilingual_smoke
+  name: Bilingual Hint Smoke Test
+  version: "1.0"
+
+switches:
+  - name: bilingual_hint
+    reset: 1
+    states: [译关, 译开]
+
+engine:
+  processors:
+    - speller
+    - selector
+    - express_editor
+  segmentors:
+    - abc_segmentor
+    - fallback_segmentor
+  translators:
+    - lua_translator@*candidate_source
+  filters:
+    - lua_filter@*bilingual_hint
+
+speller:
+  alphabet: abcdefghijklmnopqrstuvwxyz
+  delimiter: " '"
+
+bilingual_hint:
+  zh_to_en: true
+  en_to_zh: true
+  translation_mode: first
+  separator: " · "

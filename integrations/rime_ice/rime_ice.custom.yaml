@@ -1,0 +1,12 @@
+patch:
+  "engine/filters/+":
+    - lua_filter@*bilingual_hint
+  "switches/+":
+    - name: bilingual_hint
+      reset: 1
+      states: [译关, 译开]
+  bilingual_hint:
+    zh_to_en: true
+    en_to_zh: true
+    translation_mode: random
+    separator: " · "

@@ -1,0 +1,11 @@
+# encoding: utf-8
+---
+recipe:
+  Rx: all
+  description: >-
+    Install rime-bilingual Lua filter and compiled OpenCC dictionaries.
+
+install_files:
+  - lua/bilingual_hint.lua
+  - opencc/*.json
+  - opencc/*.ocd2
