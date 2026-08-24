@@ -304,6 +304,7 @@ def encoded_lines(entries: Dictionary) -> list[str]:
                 or any(ord(ch) < 0x20 or ord(ch) == 0x7F for ch in clean)
             ):
                 raise BuildError(f"invalid dictionary value for key {key!r}")
+            # OpenCC 文本词典使用普通空格分隔一个 key 的多个 value，因此将内部空格编码为 NBSP
             token = clean.replace(" ", NBSP)
             if token in seen:
                 raise BuildError(f"duplicate dictionary value for key {key!r}")
