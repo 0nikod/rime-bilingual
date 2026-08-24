@@ -7,17 +7,9 @@ recipe:
   description: >-
     Append the bilingual hint filter, switch, and settings to one schema.
 
+install_files: >-
+  integrations/*/integration.yaml
+
 patch_files:
   ${schema:-rime_ice}.custom.yaml:
-    - patch/+:
-        engine/filters/+:
-          - lua_filter@*bilingual_hint
-        switches/+:
-          - name: bilingual_hint
-            reset: 1
-            states: [译关, 译开]
-        bilingual_hint:
-          zh_to_en: true
-          en_to_zh: true
-          translation_mode: random
-          separator: " · "
+    - integrations/${schema:-rime_ice}/integration:/patch
