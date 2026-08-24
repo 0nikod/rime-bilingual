@@ -53,6 +53,7 @@ def run() -> None:
         shutil.copy2(FIXTURE / "candidate_source.lua", user / "lua")
         shutil.copy2(FIXTURE / "bilingual_smoke.schema.yaml", user)
         shutil.copy2(FIXTURE / "bilingual_smoke_all.schema.yaml", user)
+        shutil.copy2(FIXTURE / "bilingual_smoke_random.schema.yaml", user)
         shutil.copy2(FIXTURE / "default.yaml", user)
         subprocess.run(
             [
@@ -91,6 +92,17 @@ def run() -> None:
         )
         subprocess.run(
             [str(binary), str(user), str(shared_data_dir())],
+            env=environment,
+            check=True,
+        )
+
+        shutil.rmtree(user / "opencc")
+        (user / "opencc").mkdir()
+        for asset in (ROOT / "opencc").iterdir():
+            if asset.suffix in {".json", ".ocd2"}:
+                shutil.copy2(asset, user / "opencc")
+        subprocess.run(
+            [str(binary), str(user), str(shared_data_dir()), "release"],
             env=environment,
             check=True,
         )

@@ -1,6 +1,5 @@
 #include <rime_api.h>
 
-#include <cstring>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -46,11 +45,23 @@ std::vector<CandidateView> query(RimeApi* rime,
   return result;
 }
 
+bool select_schema(RimeApi* rime,
+                   RimeSessionId session,
+                   const char* schema_id) {
+  return expect(rime->select_schema(session, schema_id),
+                std::string("cannot select schema ") + schema_id);
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
-    std::cerr << "usage: rime_smoke USER_DATA_DIR SHARED_DATA_DIR\n";
+  if (argc != 3 && argc != 4) {
+    std::cerr << "usage: rime_smoke USER_DATA_DIR SHARED_DATA_DIR [release]\n";
+    return 64;
+  }
+  const bool release_mode = argc == 4 && std::string(argv[3]) == "release";
+  if (argc == 4 && !release_mode) {
+    std::cerr << "the only supported mode is release\n";
     return 64;
   }
 
@@ -79,45 +90,38 @@ int main(int argc, char** argv) {
     rime->finalize();
     return 1;
   }
-  if (!expect(rime->select_schema(session, "bilingual_smoke"),
-              "cannot select bilingual_smoke schema")) {
-    rime->destroy_session(session);
-    rime->finalize();
-    return 1;
-  }
 
-  bool ok = true;
+  bool ok = select_schema(rime, session, "bilingual_smoke");
   rime->set_option(session, "bilingual_hint", True);
+
   auto chinese = query(rime, session, "nihao");
   ok &= expect(chinese.size() == 1, "nihao should produce one candidate");
   if (chinese.size() == 1) {
     ok &= expect(chinese[0].text == "你好", "Chinese candidate text changed");
-    ok &= expect(chinese[0].comment == "原注释 · hello",
-                 "Chinese hint/comment merge failed: " + chinese[0].comment);
+    if (release_mode) {
+      const std::string prefix = "原注释 · ";
+      ok &= expect(chinese[0].comment.rfind(prefix, 0) == 0 &&
+                       chinese[0].comment.size() > prefix.size(),
+                   "release Chinese hint/comment merge failed: " +
+                       chinese[0].comment);
+    } else {
+      ok &= expect(chinese[0].comment == "原注释 · hello",
+                   "Chinese hint/comment merge failed: " + chinese[0].comment);
+    }
   }
 
-  if (!expect(rime->select_schema(session, "bilingual_smoke_all"),
-              "cannot select bilingual_smoke_all schema")) {
-    ok = false;
-  }
-  rime->set_option(session, "bilingual_hint", True);
-  auto all_mode = query(rime, session, "study");
-  ok &= expect(all_mode.size() == 1, "all mode should produce one candidate");
-  if (all_mode.size() == 1) {
-    ok &= expect(all_mode[0].comment == "study / learn / to learn",
-                 "all translation mode failed: " + all_mode[0].comment);
-  }
+  if (!release_mode) {
+    ok &= select_schema(rime, session, "bilingual_smoke_all");
+    rime->set_option(session, "bilingual_hint", True);
+    auto all_mode = query(rime, session, "study");
+    ok &= expect(all_mode.size() == 1, "all mode should produce one candidate");
+    if (all_mode.size() == 1) {
+      ok &= expect(all_mode[0].comment == "study / learn / to learn",
+                   "all translation mode failed: " + all_mode[0].comment);
+    }
 
-  if (!expect(rime->select_schema(session, "bilingual_smoke"),
-              "cannot reselect bilingual_smoke schema")) {
-    ok = false;
-  }
-  rime->set_option(session, "bilingual_hint", True);
-  RimeConfig schema_config = {};
-  if (expect(rime->schema_open("bilingual_smoke", &schema_config),
-             "cannot open bilingual_smoke config")) {
-    rime->config_set_string(
-        &schema_config, "bilingual_hint/translation_mode", "random");
+    ok &= select_schema(rime, session, "bilingual_smoke_random");
+    rime->set_option(session, "bilingual_hint", True);
     auto random_mode = query(rime, session, "hello");
     ok &= expect(random_mode.size() == 1,
                  "random mode should produce one candidate");
@@ -127,19 +131,24 @@ int main(int argc, char** argv) {
                    "random translation mode returned an unavailable form: " +
                        random_mode[0].comment);
     }
-    rime->config_set_string(
-        &schema_config, "bilingual_hint/translation_mode", "first");
-    rime->config_close(&schema_config);
-  } else {
-    ok = false;
+
+    ok &= select_schema(rime, session, "bilingual_smoke");
+    rime->set_option(session, "bilingual_hint", True);
   }
 
   auto english = query(rime, session, "computer");
   ok &= expect(english.size() == 1, "computer should produce one candidate");
   if (english.size() == 1) {
     ok &= expect(english[0].text == "computer", "English candidate text changed");
-    ok &= expect(english[0].comment == "计算机",
-                 "English hint failed: " + english[0].comment);
+    if (release_mode) {
+      ok &= expect(!english[0].comment.empty() &&
+                       english[0].comment.find("\\n") == std::string::npos,
+                   "release English hint failed or leaked escaped newline: " +
+                       english[0].comment);
+    } else {
+      ok &= expect(english[0].comment == "计算机",
+                   "English hint failed: " + english[0].comment);
+    }
   }
 
   auto miss = query(rime, session, "zzzzznotaword");
@@ -164,7 +173,8 @@ int main(int argc, char** argv) {
   rime->destroy_session(session);
   rime->finalize();
   if (ok) {
-    std::cout << "Rime bilingual candidate smoke test passed\n";
+    std::cout << (release_mode ? "Rime release dictionary smoke test passed\n"
+                               : "Rime bilingual candidate smoke test passed\n");
     return 0;
   }
   return 1;

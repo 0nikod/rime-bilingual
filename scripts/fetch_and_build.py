@@ -145,7 +145,9 @@ def publish(staging: Path, output: Path) -> None:
             raise RuntimeError(f"build did not produce a nonempty {name}")
 
     output.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="rime-bilingual-backup-") as temporary:
+    with tempfile.TemporaryDirectory(
+        prefix="rime-bilingual-backup-", dir=output.parent
+    ) as temporary:
         backup = Path(temporary)
         installed: list[Path] = []
         saved: list[tuple[Path, Path]] = []

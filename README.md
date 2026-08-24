@@ -429,7 +429,7 @@ python3 scripts/build.py \
 python3 tests/integration/run_smoke.py
 ```
 
-smoke test 会在临时目录中从 fixture 构建隔离词典，不依赖发布 OCD2 的具体释义文本；发布 OCD2 则由真实数据构建和真实雾凇 schema 加载检查单独验证。
+smoke test 先在临时目录中从 fixture 构建隔离词典，精确验证 `first`、`all`、`random` 和透传行为；随后用同一个 librime/librime-lua 流程重新加载仓库提交的真实发布 OCD2，并以不固定具体释义措辞的方式检查中英双向转换。
 
 真实雾凇拼音、Windows、Android 和性能不进入日常 CI，放在 Release 前人工检查。
 
