@@ -1,5 +1,12 @@
 {
   "name": "English to Chinese bilingual hints",
+  "segmentation": {
+    "type": "mmseg",
+    "dict": {
+      "type": "ocd2",
+      "file": "bilingual_en_zh.ocd2"
+    }
+  },
   "conversion_chain": [
     {
       "dict": {

@@ -324,11 +324,16 @@ def write_text_dictionary(path: Path, entries: Dictionary) -> None:
 
 
 def opencc_config(filename: str, name: str) -> dict[str, object]:
-    """Return the deliberately segmentation-free exact dictionary config."""
+    """Return an OpenCC config compatible with older and newer OpenCC."""
+    dictionary = {"type": "ocd2", "file": filename}
     return {
         "name": name,
+        "segmentation": {
+            "type": "mmseg",
+            "dict": dictionary.copy(),
+        },
         "conversion_chain": [
-            {"dict": {"type": "ocd2", "file": filename}},
+            {"dict": dictionary.copy()},
         ],
     }
 

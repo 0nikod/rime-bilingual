@@ -43,8 +43,16 @@ class BuildTests(unittest.TestCase):
             for stem in ("bilingual_zh_en", "bilingual_en_zh"):
                 self.assertGreater((output / f"{stem}.ocd2").stat().st_size, 0)
                 config = json.loads((output / f"{stem}.json").read_text(encoding="utf-8"))
-                self.assertEqual(list(config), ["name", "conversion_chain"])
-                self.assertNotIn("segmentation", config)
+                self.assertEqual(
+                    list(config), ["name", "segmentation", "conversion_chain"]
+                )
+                self.assertEqual(
+                    config["segmentation"],
+                    {
+                        "type": "mmseg",
+                        "dict": {"type": "ocd2", "file": f"{stem}.ocd2"},
+                    },
+                )
                 self.assertEqual(len(config["conversion_chain"]), 1)
                 self.assertEqual(
                     config["conversion_chain"][0]["dict"],
