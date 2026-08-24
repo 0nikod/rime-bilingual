@@ -1,10 +1,11 @@
 patch:
-  # 将 bilingual_hint 插入到 rime-ice 的 corrector 后。
-  # rime-ice 当前 filters 开头为：
-  #   0: lua_filter@*corrector
+  # 将 bilingual_hint 插入到 rime-frost 的 corrector 后。
+  # rime-frost 当前 filters 开头为：
+  #   0: lua_filter@*is_in_user_dict
+  #   1: lua_filter@*corrector
   # corrector 会先处理 spelling_hints 生成的拼音 comment，
   # 然后 bilingual_hint 再追加双语释义。
-  "engine/filters/@after 0":
+  "engine/filters/@after 1":
     lua_filter@*bilingual_hint
 
   "switches/+":
