@@ -3,7 +3,7 @@
 recipe:
   Rx: config
   args:
-    - schema=rime_ice
+    - schema
   description: >-
     Append the bilingual hint filter, switch, and settings to one schema.
 
@@ -11,5 +11,5 @@ install_files: >-
   integrations/*/integration.yaml
 
 patch_files:
-  ${schema:-rime_ice}.custom.yaml:
-    - integrations/${schema:-rime_ice}/integration:/patch
+  ${schema}.custom.yaml:
+    - integrations/${schema}/integration:/patch
