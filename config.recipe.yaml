@@ -2,8 +2,6 @@
 ---
 recipe:
   Rx: config
-  args:
-    - schema
   description: >-
     Append the bilingual hint filter, switch, and settings to one schema.
 
@@ -11,5 +9,6 @@ install_files: >-
   integrations/*/integration.yaml
 
 patch_files:
-  ${schema}.custom.yaml:
-    - integrations/${schema}/integration:/patch
+  ${schema:?schema_required}.custom.yaml:
+    - patch/+:
+        __include: integrations/${schema:?schema_required}/integration:/patch
